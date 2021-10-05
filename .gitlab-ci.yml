@@ -168,7 +168,6 @@ release:
       done
     done
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 refresh_job_av_database:
   image: python:3.9.1-alpine
@@ -194,7 +193,6 @@ refresh_job_av_database:
       - freshclam_db
     policy: push
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 generate_job_av:
   image: python:3.9.1-alpine
