@@ -6,47 +6,11 @@ stages:
   - dynamic_tests
   - deploy
 
-include:
-  - remote: 'https://jobs.r2devops.io/0.2.0/links_checker.yml?scope=0.yml'
-  - remote: 'https://jobs.r2devops.io/0.1.0/spell_check.yml?scope=0.yml'
-  - remote: 'https://jobs.r2devops.io/1.4.0/mkdocs.yml?scope=0.yml'
-  - remote: 'https://jobs.r2devops.io/0.3.0/pages.yml?scope=0.yml'
-  - remote: 'https://jobs.r2devops.io/lighthouse.yml?scope=0.yml'
-
 workflow:
   rules:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-ci_linter:
-  stage: static_tests
-  image:
-    name: alpine/httpie:2.4.0
-    entrypoint: [""]
-  variables:
-    GITLAB_CI_LINT_URL: "https://gitlab.gnome.org/api/v4/ci/lint?include_merged_yaml=true"
-    JOB_FILES_EXTENSION: ".yml"
-  script:
-    - apk add --no-cache jq
-    - mkdir ci_linter_reports
-    - for JOB_PATH in jobs/*; do
-    -   echo "Start checking ${JOB_PATH}/${JOB} using Gitlab CI linter API"
-    -   JOB=$(basename ${JOB_PATH})
-    -   jq --null-input --arg yaml "$(cat ${JOB_PATH}/${JOB}${JOB_FILES_EXTENSION})" '.content=$yaml' | http --print 'b' --check-status "$GITLAB_CI_LINT_URL" Content-Type:"application/json" > ci_linter_reports/${JOB}.json
-    -   if [ $(jq -r '.status' ci_linter_reports/${JOB}.json) == "valid" ]; then
-    -     echo "👍 job ${JOB_PATH}/${JOB} is valid"
-    -   else
-    -     echo "👎 job ${JOB_PATH}/${JOB} is invalid"
-    -     jq '.' ci_linter_reports/${JOB}.json
-    -     exit 1
-    -   fi
-    - done
-  artifacts:
-    expose_as: "job_ci_lint"
-    paths:
-      - ci_linter_reports/
-    when: always
 
 job_structure:
   image: python:3.9.1-alpine
@@ -160,56 +124,6 @@ job_image_scan:
     expire_in: 30 days
     when: always
 
-links_checker:
-  variables:
-    # The following hard excluded link is due that this
-    # job will be migrated to a new tool soon (see #314)
-    LICHE_EXCLUDE: ^([^http]|https://gitlab.com/r2devops/hub/-/forks/new)
-    FAIL_ON_BROKEN: "true"
-    LICHE_DIRECTORY: "docs/"
-  allow_failure: true
-
-# See https://docs.gitlab.com/ee/api/labels.html
-job_gitlab_labels:
-  image: python:3.9.1-alpine
-  stage: project_setup
-  variables:
-    PIPENV_PIPFILE: tools/job_gitlab_labels/Pipfile
-    JOB_LOGFILE: "job_gitlab_labels.log"
-    PYTHONPATH: "./:$PYTHONPATH"
-  before_script:
-    - pip install --ignore-installed distlib pipenv
-    - pipenv install
-  script:
-    - pipenv run python3 tools/job_gitlab_labels/job_gitlab_labels.py
-  artifacts:
-    expose_as: "job_gitlab_labels"
-    paths:
-      - ${JOB_LOGFILE}
-    expire_in: 30 days
-    when: always
-  rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
-
-spell_check:
-  variables:
-    PYSPELLING_CONFIG: '.spell_check/.pyspelling.yml'
-
-mkdocs:
-  variables:
-    PIPENV_PIPFILE: tools/builder/Pipfile
-    PYTHONPATH: "./:$PYTHONPATH"
-    JOB_LOGFILE: "builder.log"
-  before_script:
-    - pip install pipenv==2020.11.15 && pipenv install
-    - pipenv run python tools/builder/builder.py
-    - unset PIPENV_PIPFILE
-    - apk add build-base
-  artifacts:
-    paths:
-      - "${JOB_LOGFILE}"
-      - "website_build/"
-
 # See https://docs.gitlab.com/ee/api/releases/
 # We can only control the link to the hub, the release is still storing the source code
 release:
@@ -254,7 +168,6 @@ release:
       done
     done
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 refresh_job_av_database:
   image: python:3.9.1-alpine
@@ -280,7 +193,6 @@ refresh_job_av_database:
       - freshclam_db
     policy: push
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 generate_job_av:
   image: python:3.9.1-alpine
@@ -292,7 +204,7 @@ generate_job_av:
     PYTHONPATH: "./:${PYTHONPATH}"
     SCANNED_IMAGES_FILE: "clamav_scanned_images.json"
   script:
-    - if [ $CI_CLAMAV_PIPELINE ]; then echo "[]" > ${SCANNED_IMAGES_FILE}; fi
+    - echo "[]" > ${SCANNED_IMAGES_FILE};
     - if [ -f "${SCANNED_IMAGES_FILE}" ]; then cat ${SCANNED_IMAGES_FILE}; fi
     - apk add --no-cache python3 py3-pip util-linux
     - pip install --ignore-installed distlib pipenv
@@ -310,8 +222,6 @@ generate_job_av:
       - clamav_scanned_images.json
     policy: pull-push
   rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 child_job_av:
   stage: merge_tests
@@ -321,5 +231,3 @@ child_job_av:
         job: generate_job_av
     strategy: depend
   rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
