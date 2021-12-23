@@ -138,6 +138,7 @@ Gzip
 HADOLINT
 hadolint
 hardcoded
+headlessly
 Hotjar
 Hotjar's
 html
