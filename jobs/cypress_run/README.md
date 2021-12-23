@@ -4,7 +4,7 @@ A job to run end-to-end test
 
 ## How to use it
 
-1. <Your steps>
+1. Ensure to cypress inst
 1. Add this job URL inside the `include` list of your `.gitlab-ci.yml` file (see the [quick setup](/use-the-hub/#quick-setup)). You can specify [a fixed version](#changelog) instead of `latest`.
     ```yaml
       - remote: 'https://jobs.r2devops.io/latest/cypress_run.yml'
@@ -17,7 +17,7 @@ A job to run end-to-end test
 
 * Job name: `cypress_run`
 * Docker image:
-[`node:16-buster`](https://hub.docker.com/r/_/node)
+[`cypress/browsers:node16.5.0-chrome94-ff93`](https://hub.docker.com/r/cypress/browsers)
 * Default stage: `dynamic_tests`
 * When: `always`
 
@@ -26,7 +26,7 @@ A job to run end-to-end test
 | Name | Description | Default | 
 | ---- | ----------- | ------- |
 | `CYPRESS_CONFIG_FILE` | Specify a config file to use | `cypress.json` |
-| `CYPRESS_PROJECT_PATH` | Path to project dir | ` ` |
+| `CYPRESS_PROJECT_PATH` | Path to project dir | `.` |
 | `CYPRESS_RECORD_KEY` | Specify a record key in order to get a video of tests | ` ` |
 | `CYPRESS_RECORDER` | Name of the reporter used | `spec` |
 | `ADDITIONAL_OPTIONS` | Additional options to the run | ` ` |
