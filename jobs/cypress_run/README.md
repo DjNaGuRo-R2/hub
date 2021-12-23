@@ -1,10 +1,10 @@
 ## Objective
 
-A job to run end-to-end test
+This job test your front end web application by running tests headlessly in a CI context.
 
 ## How to use it
 
-1. Ensure to cypress inst
+1. Ensure yourself that your project is set to use Cypress. You can refer to the [Cypress Getting Started](https://docs.cypress.io/guides/getting-started/installing-cypress). If you want to connect your GitLab instance with the Cypress Dashboard to see there your job records - in case that you override the `CYPRESS_RECORD_KEY`, you can set up your project by following the [Cypress Dashboard documentation](https://docs.cypress.io/guides/dashboard/gitlab-integration#Installing-the-GitLab-integration).
 1. Add this job URL inside the `include` list of your `.gitlab-ci.yml` file (see the [quick setup](/use-the-hub/#quick-setup)). You can specify [a fixed version](#changelog) instead of `latest`.
     ```yaml
       - remote: 'https://jobs.r2devops.io/latest/cypress_run.yml'
