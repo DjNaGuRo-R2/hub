@@ -15,7 +15,7 @@ cypress_run:
       CYPRESS_CONFIG_FILE : "cypress.json"
       CYPRESS_PROJECT_PATH : "."
       CYPRESS_RECORD_KEY : ""
-      CYPRESS_RECORDER : "spec"
+      CYPRESS_REPORTER : "spec"
       CYPRESS_BASE_URL : ""
       ADDITIONAL_OPTIONS : ""
 
@@ -33,9 +33,9 @@ cypress_run:
       - fi
       # run Cypress tests
       - if [ ! -z ${CYPRESS_RECORD_KEY} ]; then
-      -   npx cypress run -P ${CYPRESS_PROJECT_PATH} -C ${CYPRESS_CONFIG_FILE} -r ${CYPRESS_RECORDER} ${ADDITIONAL_OPTIONS} --record
+      -   npx cypress run -P ${CYPRESS_PROJECT_PATH} -C ${CYPRESS_CONFIG_FILE} -r ${CYPRESS_REPORTER} ${ADDITIONAL_OPTIONS} --record
       - else
-      -   npx cypress run -P ${CYPRESS_PROJECT_PATH} -C ${CYPRESS_CONFIG_FILE} -r ${CYPRESS_RECORDER} ${ADDITIONAL_OPTIONS}
+      -   npx cypress run -P ${CYPRESS_PROJECT_PATH} -C ${CYPRESS_CONFIG_FILE} -r ${CYPRESS_REPORTER} ${ADDITIONAL_OPTIONS}
       - fi
       
     artifacts:

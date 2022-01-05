@@ -32,6 +32,6 @@ This job test your front end web application by running tests headlessly in a CI
 | `CYPRESS_CONFIG_FILE` | Specify a config file to use | `cypress.json` |
 | `CYPRESS_PROJECT_PATH` | Path to project directory | `.` |
 | `CYPRESS_RECORD_KEY` | Specify a record key in order to get a video of tests | ` ` |
-| `CYPRESS_RECORDER` | Name of the reporter used | `spec` |
+| `CYPRESS_REPORTER` | Name of the [Mocka reporter](https://docs.cypress.io/guides/tooling/reporters) used| `spec` |
 | `CYPRESS_BASE_URL`  | **(MANDATORY)** The base URL of your server | ` `|
 | `ADDITIONAL_OPTIONS` | Additional options to the run | ` ` |
