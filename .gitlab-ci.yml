@@ -12,10 +12,10 @@ variables:
   IMAGE_TAG_PYTHON_ALPINE: "alpine3.16"
   IMAGE_TAG_HTTPIE_ALPINE: "3.2.1"
 
-workflow:
-  rules:
-    - if: $CI_MERGE_REQUEST_IID
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#workflow:
+#  rules:
+#    - if: $CI_MERGE_REQUEST_IID
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 ci_linter:
   stage: static_tests
@@ -189,8 +189,8 @@ job_gitlab_labels:
       - ${JOB_LOGFILE}
     expire_in: 30 days
     when: always
-  rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 codespell:
   stage: static_tests
@@ -250,8 +250,8 @@ release:
 
       done
     done
-  rules:
-   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#  rules:
+#   - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 refresh_job_av_database:
   image: python:${IMAGE_TAG_PYTHON_ALPINE}
@@ -276,8 +276,8 @@ refresh_job_av_database:
     paths:
       - freshclam_db
     policy: push
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 generate_job_av:
   image: python:${IMAGE_TAG_PYTHON_ALPINE}
@@ -308,9 +308,9 @@ generate_job_av:
     paths:
       - clamav_scanned_images.json
     policy: pull-push
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#  rules:
+#    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
 
 child_job_av:
   stage: merge_tests
@@ -319,6 +319,6 @@ child_job_av:
       - artifact: generated-gitlab-ci.yml
         job: generate_job_av
     strategy: depend
-  rules:
-    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#  rules:
+#    - if: '$CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
+#    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_CLAMAV_PIPELINE && $CI_PROJECT_PATH_SLUG == "r2devops-hub"'
