@@ -129,7 +129,7 @@ job_image_scan:
     - tar zxvf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
     - wget -O $TEMPLATE_NAME https://github.com/aquasecurity/trivy/raw/v${TRIVY_VERSION}/contrib/junit.tpl
 
-    - mkdir ${OUTPUT_DIR}
+    - mkdir -p ${OUTPUT_DIR}/CVE
   script:
     # We force database download once so we don't do much GitHub Api calls
     - ./trivy --cache-dir ${TRIVY_CACHE_DIR} image --download-db-only
@@ -137,9 +137,9 @@ job_image_scan:
     -   IMAGE=$(pipenv run python3 tools/job_image/job_image.py ${JOB})
     -   if [ ! -z ${IMAGE} ]; then
     -     NAME=$(basename ${IMAGE})
-    -     ./trivy image -f template --template "@${TEMPLATE_NAME}" --security-checks vuln --vuln-type ${TRIVY_VULN_TYPE} --cache-dir ${TRIVY_CACHE_DIR} -o ${OUTPUT_DIR}/${NAME}.${TRIVY_OUTPUT} -f json -o ${OUTPUT_DIR}/CVE/${NAME}.json ${IMAGE}
+    -     ./trivy image --format template --template "@${TEMPLATE_NAME}" --security-checks vuln --vuln-type ${TRIVY_VULN_TYPE} --cache-dir ${TRIVY_CACHE_DIR} -o ${OUTPUT_DIR}/${NAME}.${TRIVY_OUTPUT} -f json -o ${OUTPUT_DIR}/CVE/${NAME}.json ${IMAGE}
     -     if [ ! -z ${TRIVY_EXIT_ON_SEVERITY} ]; then
-    -       ./trivy image -f template --template "@${TEMPLATE_NAME}" --security-checks vuln --vuln-type ${TRIVY_VULN_TYPE} --cache-dir ${TRIVY_CACHE_DIR} --exit-code 1 --severity ${TRIVY_SEVERITY} -o ${OUTPUT_DIR}/${NAME}-failed-${TRIVY_OUTPUT} ${IMAGE}
+    -       ./trivy image --format template --template "@${TEMPLATE_NAME}" --security-checks vuln --vuln-type ${TRIVY_VULN_TYPE} --cache-dir ${TRIVY_CACHE_DIR} --exit-code 1 --severity ${TRIVY_SEVERITY} -o ${OUTPUT_DIR}/${NAME}-failed-${TRIVY_OUTPUT} ${IMAGE}
     -     fi
     -   fi
     -   IMAGE=""
