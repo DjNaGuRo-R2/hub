@@ -1,0 +1,13 @@
+files:
+    template: ./cargo_doc/cargo_doc.yml
+    documentation: ./cargo_doc/README.md
+    changelog: ./cargo_doc/CHANGELOG.md
+data:
+    description: "Build and publish a Docker image"
+    icon: 🐳
+    public: false
+    labels:
+    - Docker
+    - Build
+    license: MIT
+    deprecated: false

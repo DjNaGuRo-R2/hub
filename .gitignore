@@ -6,3 +6,4 @@ docs/images/jobs
 .idea
 default_logfile.log
 log
+.dccache
